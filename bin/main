@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'aws-sdk'
+require 'elasticsearch'
+require 'pry'
+require_relative '../lib/log_shipper'
+
+# Read from SQS
+sqs = Aws::SQS::Client.new(region: LogShipper.region)
+poller = Aws::SQS::QueuePoller.new(LogShipper.sqs_queue_url, client: sqs)
+poller.poll(max_number_of_messages: 10) do |messages|
+  requests = messages.map do |msg|
+    body = JSON.parse(msg.body)
+    {
+      index: {
+        _index: body['project'],
+        _type: body['type'],
+        body: { message: body['message'], '@timestamp': body['@timestamp'] },
+        timestamp: body['@timestamp']
+      }
+    }
+  end
+
+  # Write to Elasticsearch in a Batch
+  client = Elasticsearch::Client.new(host: LogShipper.es_domain_url)
+  client.bulk(body: requests)
+end
+
