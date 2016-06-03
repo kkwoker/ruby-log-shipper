@@ -8,7 +8,16 @@ require 'terminal-announce'
 require_relative '../lib/log_shipper'
 
 # Read from SQS
-LogShipper.sqs_poller.poll do |messages|
+#
+
+def ship
+  LogShipper.sqs_poller.poll do |messages|
+    requests = convert_to_es_request(messages)
+    LogShipper.es_client.bulk(body: requests)
+  end
+end
+
+def convert_to_es_request(messages)
   requests = messages.map do |msg|
     body = JSON.parse(msg.body)
     {
@@ -20,8 +29,11 @@ LogShipper.sqs_poller.poll do |messages|
       }
     }
   end
-
-  # Write to Elasticsearch in a Batch
-  LogShipper.es_client.bulk(body: requests)
 end
 
+threads = []
+LogShipper.threads.times do
+  threads << Thread.new { ship }
+end
+
+threads.each(&:join)

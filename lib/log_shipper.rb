@@ -21,6 +21,7 @@ LogShipper.config do
   parameter :sqs_queue_url
   parameter :es_domain_url
   parameter :region
+  parameter :threads
   parameter :es_client
   parameter :sqs_client
   parameter :sqs_poller
@@ -30,6 +31,7 @@ LogShipper.config do
   sqs_queue_url 'https://sqs.us-west-2.amazonaws.com/461957644563/staging-logs'
   es_domain_url 'https://logs.telus.digital/'
   region 'us-west-2'
+  threads 5
 end
 
 LogShipper.config do
