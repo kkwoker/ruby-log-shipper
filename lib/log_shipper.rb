@@ -21,6 +21,9 @@ LogShipper.config do
   parameter :sqs_queue_url
   parameter :es_domain_url
   parameter :region
+  parameter :es_client
+  parameter :sqs_client
+  parameter :sqs_poller
 end
 
 LogShipper.config do
