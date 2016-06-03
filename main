@@ -1,0 +1,35 @@
+#!/usr/bin ruby
+require 'aws-sdk'
+require 'elasticsearch'
+require 'pry'
+sqs = Aws::SQS::Client.new(region: 'us-west-1')
+ES_DOMAIN = 'https://logs.telus.digital/'
+
+queue_url = 'https://sqs.us-west-2.amazonaws.com/461957644563/staging-logs'
+
+poller = Aws::SQS::QueuePoller.new(queue_url, client: sqs)
+
+poller.poll(max_number_of_messages: 10) do |messages|
+  requests = []
+  messages.each do |msg|
+    puts msg.body
+    data = JSON.parse(msg.body)
+    requests << {
+      index: {
+        _index: data['project'],
+        _type: data['type'],
+        data: { message: data['message'], "hahaha": data['@timestamp']},
+        timestamp: data['@timestamp']
+      }
+    }
+  end
+
+  # Write to Elasticsearch in a Batch
+    client = Elasticsearch::Client.new(host: ES_DOMAIN)
+    binding.pry
+
+    client.bulk body: requests
+end
+
+
+
