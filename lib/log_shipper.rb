@@ -32,3 +32,22 @@ LogShipper.config do
   region 'us-west-2'
 end
 
+LogShipper.config do
+  es_client Elasticsearch::Client.new(
+    host: LogShipper.es_domain_url,
+  #  log: true,
+    adapter: :net_http_persistent
+  )
+  sqs_client Aws::SQS::Client.new(region: LogShipper.region)
+  sqs_poller Aws::SQS::QueuePoller.new(
+    LogShipper.sqs_queue_url,
+    client: LogShipper.sqs_client,
+    max_number_of_messages: 10
+  )
+end
+
+LogShipper.sqs_poller.before_request do |stats|
+  Announce.info "requests: #{stats.request_count}"
+  Announce.info "messages: #{stats.received_message_count}"
+  Announce.info "last-timestamp: #{stats.last_message_received_at}"
+end

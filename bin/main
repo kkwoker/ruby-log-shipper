@@ -3,21 +3,9 @@
 require 'bundler/setup'
 require 'aws-sdk'
 require 'elasticsearch'
-require 'typhoeus'
 require 'pry'
+require 'terminal-announce'
 require_relative '../lib/log_shipper'
-LogShipper.config do
-  es_client Elasticsearch::Client.new(
-    host: LogShipper.es_domain_url,
-    log: true
-  )
-  sqs_client Aws::SQS::Client.new(region: LogShipper.region)
-  sqs_poller Aws::SQS::QueuePoller.new(
-    LogShipper.sqs_queue_url,
-    client: LogShipper.sqs_client,
-    max_number_of_messages: 10
-  )
-end
 
 # Read from SQS
 LogShipper.sqs_poller.poll do |messages|
