@@ -1,5 +1,5 @@
 task :run do
-  ruby 'main'
+  ruby 'bin/main'
 end
 
 task :default => :run
