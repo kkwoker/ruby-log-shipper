@@ -5,7 +5,7 @@ require 'aws-sdk'
 require 'elasticsearch'
 require 'pry'
 require 'terminal-announce'
-require_relative '../log_shipper'
+require_relative '../config'
 binding.pry
 def ship
   LogShipper.sqs_poller.poll do |messages|
