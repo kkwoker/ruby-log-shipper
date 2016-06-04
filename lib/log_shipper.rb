@@ -28,7 +28,7 @@ end
 
 LogShipper.config do
   sqs_queue_url 'https://sqs.us-west-2.amazonaws.com/461957644563/staging-logs'
-  es_domain_url 'https://logs.telus.digital/'
+  es_domain_url 'https://search-production-logs-o5b3ar4zedvoc3j73jgufldvca.us-east-1.es.amazonaws.com'
   region 'us-west-2'
   threads 5
 end
