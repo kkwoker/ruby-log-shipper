@@ -16,8 +16,10 @@ def ship
       begin
         result = LogShipper.es_client.bulk(body: requests)
         Announce.failure result if result['errors']
+        Announce.success result unless result['errors']
       rescue => e
         Announce.failure "ES unknown error when delivering #{e}"
+        puts requests
       end
     end
   rescue => e
