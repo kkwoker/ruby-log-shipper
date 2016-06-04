@@ -6,7 +6,7 @@ require 'elasticsearch'
 require 'pry'
 require 'terminal-announce'
 require_relative '../config'
-binding.pry
+
 def ship
   LogShipper.sqs_poller.poll do |messages|
     requests = convert_to_es_request(messages)
