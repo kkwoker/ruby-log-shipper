@@ -69,6 +69,7 @@ PLATFORMS
 
 DEPENDENCIES
   aws-sdk (~> 2)
+  contracts
   elasticsearch
   net-http-persistent
   pry

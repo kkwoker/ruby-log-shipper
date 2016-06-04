@@ -24,5 +24,6 @@ LogShipper.config do
   parameter :es_client
   parameter :sqs_client
   parameter :sqs_poller
+  parameter :debug
 end
 

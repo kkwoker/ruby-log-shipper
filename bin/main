@@ -1,31 +1,51 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
+require 'pry'
+require 'contracts'
 require 'aws-sdk'
 require 'elasticsearch'
-require 'pry'
-require 'terminal-announce'
+require_relative '../terminal-announce_helper'
 require_relative '../config'
+include Contracts::Core
 
 def ship
-  LogShipper.sqs_poller.poll do |messages|
-    requests = convert_to_es_request(messages)
-    LogShipper.es_client.bulk(body: requests)
+  begin
+    LogShipper.sqs_poller.poll do |messages|
+      requests = convert_to_es_request(messages)
+      begin
+        result = LogShipper.es_client.bulk(body: requests)
+        Announce.failure result if result['errors']
+      rescue => e
+        Announce.failure "ES unknown error when delivering #{e}"
+      end
+    end
+  rescue => e
+    Announce.failure "SQS unknown error when polling #{e}"
   end
 end
 
+Contract Aws::Xml::DefaultList => Array
 def convert_to_es_request(messages)
+  announce_stats(messages)
   messages.map do |msg|
     body = JSON.parse(msg.body)
+    date = DateTime.parse(body['@timestamp']).strftime("%Y.%m.%d")
     {
-      index: {
-        _index: body['project'],
+      create: {
+        _index: "#{body['project']}-#{body['environment_tier']}-#{date}",
         _type: body['type'],
-        body: { message: body['message'], '@timestamp' => body['@timestamp'] },
-        timestamp: body['@timestamp']
-      }
+      },
+      log: body['message'],
+      '@timestamp' => body['@timestamp']
     }
   end
+end
+
+def announce_stats(messages)
+  body = JSON.parse(messages.first.body)
+  date = DateTime.parse(body['@timestamp']).strftime("%Y.%m.%d")
+  Announce.info "#{body['project']}-#{body['environment_tier']}-#{date} #{body['type']}"
 end
 
 threads = []
