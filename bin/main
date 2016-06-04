@@ -7,9 +7,6 @@ require 'pry'
 require 'terminal-announce'
 require_relative '../lib/log_shipper'
 
-# Read from SQS
-#
-
 def ship
   LogShipper.sqs_poller.poll do |messages|
     requests = convert_to_es_request(messages)
@@ -18,13 +15,13 @@ def ship
 end
 
 def convert_to_es_request(messages)
-  requests = messages.map do |msg|
+  messages.map do |msg|
     body = JSON.parse(msg.body)
     {
       index: {
         _index: body['project'],
         _type: body['type'],
-        body: { message: body['message'], '@timestamp': body['@timestamp'] },
+        body: { message: body['message'], '@timestamp' => body['@timestamp'] },
         timestamp: body['@timestamp']
       }
     }

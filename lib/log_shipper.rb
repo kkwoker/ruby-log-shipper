@@ -6,7 +6,7 @@ module LogShipper
       attr_accessor name
       define_method name do |*values|
         value = values.first
-        value ? self.send("#{name}=", value) : instance_variable_get("@#{name}")
+        value ? send("#{name}=", value) : instance_variable_get("@#{name}")
       end
     end
   end
@@ -14,7 +14,6 @@ module LogShipper
   def config(&block)
     instance_eval &block
   end
-
 end
 
 LogShipper.config do
@@ -37,7 +36,7 @@ end
 LogShipper.config do
   es_client Elasticsearch::Client.new(
     host: LogShipper.es_domain_url,
-  #  log: true,
+    #  log: true,
     adapter: :net_http_persistent
   )
   sqs_client Aws::SQS::Client.new(region: LogShipper.region)
