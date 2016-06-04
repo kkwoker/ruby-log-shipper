@@ -10,6 +10,7 @@ GEM
       aws-sdk-core (= 2.3.9)
     coderay (1.1.1)
     contracts (0.14.0)
+    diff-lcs (1.2.5)
     elasticsearch (1.0.17)
       elasticsearch-api (= 1.0.17)
       elasticsearch-transport (= 1.0.17)
@@ -36,6 +37,19 @@ GEM
       slop (~> 3.4)
     rainbow (2.1.0)
     rake (11.1.2)
+    rspec (3.4.0)
+      rspec-core (~> 3.4.0)
+      rspec-expectations (~> 3.4.0)
+      rspec-mocks (~> 3.4.0)
+    rspec-core (3.4.4)
+      rspec-support (~> 3.4.0)
+    rspec-expectations (3.4.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-mocks (3.4.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-support (3.4.1)
     rubocop (0.40.0)
       parser (>= 2.3.1.0, < 3.0)
       powerpack (~> 0.1)
@@ -59,6 +73,7 @@ DEPENDENCIES
   net-http-persistent
   pry
   rake
+  rspec
   rubocop
   terminal-announce
 
