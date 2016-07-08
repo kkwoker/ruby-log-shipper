@@ -38,7 +38,7 @@ def convert_to_es_request(messages)
         _index: "#{body['project']}-#{body['environment_tier']}-#{date}",
         _type: body['type'],
       },
-      log: body['message'],
+      message: body['message'],
       '@timestamp' => body['@timestamp']
     }
   end
